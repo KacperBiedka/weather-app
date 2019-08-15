@@ -23,8 +23,9 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     background: white;
     height: 25px;
     padding: 5px;
-    width: 250px;
-    right: 0;
+    width: 30vw;
+    margin: auto;
+    margin-top: 10px;
     border: none;
   `;
 
@@ -65,8 +66,7 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     <Container data-test="component-container">
       <SearchInput data-test="map-search-input" />
       <div data-test="google-map-container" id="map">
-        {/* {map} */}
-        <Loader />
+        {map}
       </div>
     </Container>
   );
