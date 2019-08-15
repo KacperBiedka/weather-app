@@ -1,18 +1,19 @@
-import * as React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { GoogleMap, withGoogleMap, withScriptjs } from "react-google-maps";
 
 import { mapsKey } from "../../apiKeys";
+import Loader from "../Loader/Loader";
 
 export interface WeatherMapProps {}
 
 const WeatherMap: React.SFC<WeatherMapProps> = () => {
-  const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${mapsKey}`;
+  const [location, setLocation] = useState({ lat: 52.409538, lng: 16.931992 });
 
   const Container = styled.div`
     height: 100vh;
     width: 75vw;
-    background: #555;
+    background: #ccc;
     float: right;
   `;
 
@@ -27,21 +28,30 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     border: none;
   `;
 
-  const someLatLng = { lat: 55.751244, lng: 37.618423 };
+  // Get the location of the user with the HTML5 GeoLocation API
+
+  const locationHandler = (position: any) => {
+    const lat: number = position.coords.latitude;
+    const lng: number = position.coords.longitude;
+    setLocation({ lat, lng });
+  };
+
+  navigator.geolocation.getCurrentPosition(locationHandler);
 
   const MyGoogleMap = withScriptjs(
     withGoogleMap(() => (
       <GoogleMap
-        defaultCenter={someLatLng}
+        defaultCenter={location}
         defaultZoom={16}
-        options={{ disableDefaultUI: true }}
+        options={{ disableDefaultUI: false }}
       />
     ))
   );
 
-  const loadingElement = <div />;
+  const loadingElement = <Loader />;
   const containerElement = <div style={{ height: "100vh" }} />;
   const mapElement = <div style={{ height: "100vh" }} />;
+  const googleMapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${mapsKey}`;
   const map = (
     <MyGoogleMap
       loadingElement={loadingElement}
@@ -55,7 +65,8 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     <Container data-test="component-container">
       <SearchInput data-test="map-search-input" />
       <div data-test="google-map-container" id="map">
-        {map}
+        {/* {map} */}
+        <Loader />
       </div>
     </Container>
   );
