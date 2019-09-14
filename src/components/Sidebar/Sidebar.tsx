@@ -6,7 +6,7 @@ export interface SidebarProps {}
 
 const Sidebar: React.SFC<SidebarProps> = () => {
   const [
-    chartData = {
+    lineChartData = {
       labels: [
         "6:00",
         "8:00",
@@ -19,12 +19,36 @@ const Sidebar: React.SFC<SidebarProps> = () => {
       ],
       datasets: [
         {
+          label: "Temperature",
           data: [20, 21, 25, 19, 16, 19, 15, 10],
-          backgroundColor: ["rgba(192, 236, 174, 0.6)"]
+          backgroundColor: "rgba(192, 236, 174, 0.6)"
         }
       ]
     },
-    setChartData
+    setLineChartData
+  ] = useState();
+
+  const [
+    barChartData = {
+      labels: [
+        "6:00",
+        "8:00",
+        "12:00",
+        "14:00",
+        "16:00",
+        "18:00",
+        "20:00",
+        "22:00"
+      ],
+      datasets: [
+        {
+          label: "Rain chance in %",
+          data: [5, 10, 15, 20, 20, 15, 10, 5],
+          backgroundColor: "rgba(139, 188, 218, 0.9)"
+        }
+      ]
+    },
+    setBarChartData
   ] = useState();
 
   const Container = styled.div`
@@ -45,33 +69,80 @@ const Sidebar: React.SFC<SidebarProps> = () => {
 
   const WeatherIcon = styled.i`
     font-size: 70px;
-    padding-bottom: 10px;
     font-weight: 400;
+    color: #f6cf65;
   `;
 
   const TempHeader = styled.h2`
+    margin-top: 10px;
+    margin-bottom: 40px;
     font-size: 35px;
     font-weight: 300;
   `;
 
-  const ChartContainer = styled.div`
+  const LineChartContainer = styled.div`
     width: 90%;
     margin: auto;
     height: 20vh;
   `;
 
+  const BarChartContainer = styled.div`
+    width: 90%;
+    margin: auto;
+    height: 20vh;
+    margin-top: 5vh;s
+  `;
+
   return (
-    <Container>
-      <NameHeader>Poznań</NameHeader>
-      <WeatherIcon className="wi wi-day-sunny"></WeatherIcon>
-      <TempHeader>23&deg;C</TempHeader>
-      <ChartContainer>
+    <Container data-test="component-container">
+      <NameHeader data-test="name-header">Poznań</NameHeader>
+      <WeatherIcon
+        data-test="weather-icon"
+        className="wi wi-day-sunny"
+      ></WeatherIcon>
+      <TempHeader data-test="temp-header">23&deg;C</TempHeader>
+      <LineChartContainer data-test="line-chart-container">
         <Line
+          data-test="line-chart"
           height={200}
-          data={chartData}
+          data={lineChartData}
           options={{
             legend: {
-              display: false
+              labels: {
+                fontColor: "#fff"
+              }
+            },
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: false,
+                    fontColor: "#fff"
+                  }
+                }
+              ],
+              xAxes: [
+                {
+                  ticks: {
+                    fontColor: "#fff"
+                  }
+                }
+              ]
+            },
+            maintainAspectRatio: false
+          }}
+        />
+      </LineChartContainer>
+      <BarChartContainer data-test="bar-chart-container">
+        <Bar
+          data-test="bar-chart"
+          height={200}
+          data={barChartData}
+          options={{
+            legend: {
+              labels: {
+                fontColor: "#fff"
+              }
             },
             points: {
               display: false
@@ -96,7 +167,7 @@ const Sidebar: React.SFC<SidebarProps> = () => {
             maintainAspectRatio: false
           }}
         />
-      </ChartContainer>
+      </BarChartContainer>
     </Container>
   );
 };
