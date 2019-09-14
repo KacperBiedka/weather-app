@@ -8,7 +8,20 @@ import Loader from "../Loader/Loader";
 export interface WeatherMapProps {}
 
 const WeatherMap: React.SFC<WeatherMapProps> = () => {
-  const [location, setLocation] = useState({ lat: 52.409538, lng: 16.931992 });
+  (function getData() {
+    fetch(
+      "api.openweathermap.org/data/2.5/forecast?q=Poznań&appid=12b2b1e974da435d9d57e2e5956178eb"
+    )
+      .then(res => res.json())
+      .then(data => {
+        console.log(JSON.parse(data));
+      });
+  })();
+
+  const [location, setLocation] = useState({
+    lat: 52.412144263995835,
+    lng: 16.83990933013979
+  });
 
   const Container = styled.div`
     height: 100vh;
@@ -31,13 +44,14 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
 
   // Get the location of the user with the HTML5 GeoLocation API
 
-  const locationHandler = (position: any) => {
-    const lat: number = position.coords.latitude;
-    const lng: number = position.coords.longitude;
-    setLocation({ lat, lng });
-  };
+  // const locationHandler = (position: any) => {
+  //   const lat: number = position.coords.latitude;
+  //   const lng: number = position.coords.longitude;
+  //   console.log(lat, lng);
+  //   setLocation({ lat, lng });
+  // };
 
-  navigator.geolocation.getCurrentPosition(locationHandler);
+  // navigator.geolocation.getCurrentPosition(locationHandler);
 
   const MyGoogleMap = withScriptjs(
     withGoogleMap(() => (
@@ -45,6 +59,10 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
         defaultCenter={location}
         defaultZoom={16}
         options={{ disableDefaultUI: false }}
+        onClick={e => {
+          console.log("latitude", e.latLng.lat());
+          console.log("longitude", e.latLng.lng());
+        }}
       />
     ))
   );
