@@ -1,20 +1,31 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { connect } from "react-redux";
 import { GoogleMap, withGoogleMap, withScriptjs } from "react-google-maps";
+import axios from "axios";
+import * as actionTypes from "../../actions";
 
-import { mapsKey } from "../../apiKeys";
+import { mapsKey, weatherKey } from "../../apiKeys";
 import Loader from "../Loader/Loader";
 
 export interface WeatherMapProps {}
 
-const WeatherMap: React.SFC<WeatherMapProps> = () => {
+export const UnconnectedWeatherMap: React.SFC = (props: any) => {
   (function getData() {
-    fetch(
-      "api.openweathermap.org/data/2.5/forecast?q=Poznań&appid=12b2b1e974da435d9d57e2e5956178eb"
-    )
-      .then(res => res.json())
-      .then(data => {
-        console.log(JSON.parse(data));
+    axios
+      .get(
+        `http://api.openweathermap.org/data/2.5/weather?q=Poznan&units=metric&APPID=${weatherKey}`
+      )
+      .then(function(response) {
+        props.getTemperature(response.data.main);
+        console.log(response);
+      })
+      .catch(function(error) {
+        // handle error
+        console.log(error);
+      })
+      .finally(function() {
+        // always executed
       });
   })();
 
@@ -37,8 +48,8 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     height: 25px;
     padding: 5px;
     width: 30vw;
-    margin: auto;
-    margin-top: 10px;
+    right: 15vw;
+    top: 10px;
     border: none;
   `;
 
@@ -90,4 +101,14 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
   );
 };
 
-export default WeatherMap;
+const mapDispatchToProps = (dispatch: Function) => {
+  return {
+    getTemperature: (temperature: Object) =>
+      dispatch(actionTypes.getTemperature(temperature))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(UnconnectedWeatherMap);
