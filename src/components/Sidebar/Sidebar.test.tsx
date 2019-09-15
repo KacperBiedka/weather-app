@@ -1,13 +1,26 @@
 import React from "react";
-import Enzyme from "enzyme";
-import Sidebar from "./Sidebar";
+import Enzyme, { shallow } from "enzyme";
+import Sidebar, { UnconnectedSidebar } from "./Sidebar";
 
-import { findByTestAttr } from "../../../test/testUtils";
+import { findByTestAttr, storeFactory } from "../../../test/testUtils";
+
+const setup = (initialState = {}) => {
+  const store = storeFactory(initialState);
+  const wrapper = shallow(<Sidebar store={store} />)
+    .dive()
+    .dive();
+  return wrapper;
+};
 
 describe("Sidebar component", () => {
   let wrapper: object;
   beforeEach(() => {
-    wrapper = Enzyme.shallow(<Sidebar />);
+    const initialState = {
+      temperature: {
+        temp: 17
+      }
+    };
+    wrapper = setup(initialState);
   });
   it("displays the component container", () => {
     const container = findByTestAttr(wrapper, "component-container");
@@ -28,7 +41,12 @@ describe("Sidebar component", () => {
   describe("Temperature chart", () => {
     let wrapper: object;
     beforeEach(() => {
-      wrapper = Enzyme.shallow(<Sidebar />);
+      const initialState = {
+        temperature: {
+          temp: 17
+        }
+      };
+      wrapper = setup(initialState);
     });
     it("displays the line chart container", () => {
       const container = findByTestAttr(wrapper, "line-chart-container");
@@ -42,7 +60,12 @@ describe("Sidebar component", () => {
   describe("Rain chart", () => {
     let wrapper: object;
     beforeEach(() => {
-      wrapper = Enzyme.shallow(<Sidebar />);
+      const initialState = {
+        temperature: {
+          temp: 17
+        }
+      };
+      wrapper = setup(initialState);
     });
     it("displays the bar chart container", () => {
       const container = findByTestAttr(wrapper, "bar-chart-container");
