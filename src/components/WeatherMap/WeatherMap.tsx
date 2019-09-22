@@ -11,26 +11,25 @@ import Loader from "../Loader/Loader";
 export interface WeatherMapProps {}
 
 export const UnconnectedWeatherMap: React.SFC = (props: any) => {
-
-const WeatherMap: React.SFC<WeatherMapProps> = () => {
   const [location, setLocation] = useState({
     lat: 52.412144263995835,
     lng: 16.83990933013979
   });
-  
+
   const getWeatherData = (lat: number, lng: number) => {
     axios
       .get(
         `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&units=metric&APPID=${weatherKey}`
       )
-      .then(function(response) {
-        props.getTemperature(response.data.list[0].main);
+      .then(response => {
+        props.getTemperature(response.data);
+        console.log(response.data);
       })
-      .catch(function(error) {
+      .catch(error => {
         // handle error
         console.log(error);
       })
-      .finally(function() {
+      .finally(() => {
         // always executed
       });
   };
@@ -77,10 +76,6 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
           console.log("latitude", e.latLng.lat());
           console.log("longitude", e.latLng.lng());
           getWeatherData(e.latLng.lat(), e.latLng.lng());
-          options={{ disableDefaultUI: false }}
-          onClick={e => {
-            console.log("latitude", e.latLng.lat());
-            console.log("longitude", e.latLng.lng());
         }}
       />
     ))
