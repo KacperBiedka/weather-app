@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Bar, Line } from "react-chartjs-2";
+import { connect } from "react-redux";
+import { reduxState } from "../../reducers";
 
 export interface SidebarProps {}
 
-const Sidebar: React.SFC<SidebarProps> = () => {
+export const UnconnectedSidebar: React.SFC = (props: any) => {
   const [
     lineChartData = {
       labels: [
@@ -93,14 +95,53 @@ const Sidebar: React.SFC<SidebarProps> = () => {
     margin-top: 5vh;s
   `;
 
+  // setTimeout(() => {
+  //   console.log(props.temperature.list[0].main.temp);
+  // }, 5000);
+
+  useEffect(() => {
+    let newTempChartData: Array<number> = [];
+    let newTempChartLabels: Array<string> = [];
+    props.temperature.list.map((hourTemperature: any, index: number) => {
+      if (index < 8) {
+        newTempChartData.push(hourTemperature.main.temp);
+        console.log(hourTemperature.main.temp);
+        let tempDate = hourTemperature.dt_txt.slice(11, 16);
+        if (tempDate.endsWith(":")) {
+          tempDate = "0" + tempDate.slice(0, 3);
+        }
+        newTempChartLabels.push(tempDate);
+        console.log(tempDate);
+      }
+    });
+    setLineChartData({
+      ...lineChartData,
+      labels: [...newTempChartLabels],
+      datasets: [
+        {
+          label: "Temperature",
+          data: [...newTempChartData],
+          backgroundColor: "rgba(192, 236, 174, 0.6)"
+        }
+      ]
+    });
+  }, [props.temperature]);
+
   return (
     <Container data-test="component-container">
-      <NameHeader data-test="name-header">Poznań</NameHeader>
+      <NameHeader data-test="name-header">
+        {props.temperature.city ? props.temperature.city.name : "Ławica"}
+      </NameHeader>
       <WeatherIcon
         data-test="weather-icon"
         className="wi wi-day-sunny"
       ></WeatherIcon>
-      <TempHeader data-test="temp-header">23&deg;C</TempHeader>
+      <TempHeader data-test="temp-header">
+        {props.temperature.list
+          ? Math.ceil(props.temperature.list[0].main.temp)
+          : "25"}{" "}
+        &deg;C
+      </TempHeader>
       <LineChartContainer data-test="line-chart-container">
         <Line
           data-test="line-chart"
@@ -172,4 +213,10 @@ const Sidebar: React.SFC<SidebarProps> = () => {
   );
 };
 
-export default Sidebar;
+const mapStateToProps = (state: reduxState) => {
+  return {
+    temperature: state.temperature
+  };
+};
+
+export default connect(mapStateToProps)(UnconnectedSidebar);

@@ -1,13 +1,21 @@
 import React from "react";
-import Enzyme from "enzyme";
-import WeatherMap from "./WeatherMap";
+import Enzyme, { shallow } from "enzyme";
+import WeatherMap, { UnconnectedWeatherMap } from "./WeatherMap";
 
-import { findByTestAttr } from "../../../test/testUtils";
+import { findByTestAttr, storeFactory } from "../../../test/testUtils";
+
+const setup = (initialState = {}) => {
+  const store = storeFactory(initialState);
+  const wrapper = shallow(<WeatherMap store={store} />)
+    .dive()
+    .dive();
+  return wrapper;
+};
 
 describe("WeatherMap component", () => {
   let wrapper: object;
   beforeEach(() => {
-    wrapper = Enzyme.shallow(<WeatherMap />);
+    wrapper = setup({});
   });
   it("displays the component container", () => {
     let component = findByTestAttr(wrapper, "component-container");
