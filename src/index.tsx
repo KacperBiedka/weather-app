@@ -3,12 +3,12 @@ import ReactDOM from "react-dom";
 import "./index.scss";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
-import { reducer } from "./reducers/index";
+import rootReducer from "./reducers/index";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
 const store = createStore(
-  reducer,
+  rootReducer,
   (window as any).__REDUX_DEVTOOLS_EXTENSION__ &&
     (window as any).__REDUX_DEVTOOLS_EXTENSION__()
 );

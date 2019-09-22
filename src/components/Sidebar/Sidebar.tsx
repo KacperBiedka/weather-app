@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Bar, Line } from "react-chartjs-2";
+import { connect } from "react-redux";
+import { reduxState } from "../../reducers";
 
 export interface SidebarProps {}
 
-const Sidebar: React.SFC<SidebarProps> = () => {
+export const UnconnectedSidebar: React.SFC = (props: any) => {
   const [
     lineChartData = {
       labels: [
@@ -100,7 +102,9 @@ const Sidebar: React.SFC<SidebarProps> = () => {
         data-test="weather-icon"
         className="wi wi-day-sunny"
       ></WeatherIcon>
-      <TempHeader data-test="temp-header">23&deg;C</TempHeader>
+      <TempHeader data-test="temp-header">
+        {Math.ceil(props.temperature.temp)}&deg;C
+      </TempHeader>
       <LineChartContainer data-test="line-chart-container">
         <Line
           data-test="line-chart"
@@ -172,4 +176,10 @@ const Sidebar: React.SFC<SidebarProps> = () => {
   );
 };
 
-export default Sidebar;
+const mapStateToProps = (state: reduxState) => {
+  return {
+    temperature: state.temperature
+  };
+};
+
+export default connect(mapStateToProps)(UnconnectedSidebar);

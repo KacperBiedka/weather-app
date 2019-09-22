@@ -1,27 +1,41 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { connect } from "react-redux";
 import { GoogleMap, withGoogleMap, withScriptjs } from "react-google-maps";
+import axios from "axios";
+import * as actionTypes from "../../actions";
 
-import { mapsKey } from "../../apiKeys";
+import { mapsKey, weatherKey } from "../../apiKeys";
 import Loader from "../Loader/Loader";
 
 export interface WeatherMapProps {}
 
-const WeatherMap: React.SFC<WeatherMapProps> = () => {
-  (function getData() {
-    fetch(
-      "api.openweathermap.org/data/2.5/forecast?q=Poznań&appid=12b2b1e974da435d9d57e2e5956178eb"
-    )
-      .then(res => res.json())
-      .then(data => {
-        console.log(JSON.parse(data));
-      });
-  })();
+export const UnconnectedWeatherMap: React.SFC = (props: any) => {
 
+const WeatherMap: React.SFC<WeatherMapProps> = () => {
   const [location, setLocation] = useState({
     lat: 52.412144263995835,
     lng: 16.83990933013979
   });
+  
+  const getWeatherData = (lat: number, lng: number) => {
+    axios
+      .get(
+        `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&units=metric&APPID=${weatherKey}`
+      )
+      .then(function(response) {
+        props.getTemperature(response.data.list[0].main);
+      })
+      .catch(function(error) {
+        // handle error
+        console.log(error);
+      })
+      .finally(function() {
+        // always executed
+      });
+  };
+
+  getWeatherData(location.lat, location.lng);
 
   const Container = styled.div`
     height: 100vh;
@@ -37,9 +51,9 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     height: 25px;
     padding: 5px;
     width: 30vw;
-    margin: auto;
-    margin-top: 10px;
-    border: none;
+    right: 15vw;
+    top: 10px;
+    border: solid 1px #ccc;
   `;
 
   // Get the location of the user with the HTML5 GeoLocation API
@@ -57,11 +71,16 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
     withGoogleMap(() => (
       <GoogleMap
         defaultCenter={location}
-        defaultZoom={16}
-        options={{ disableDefaultUI: false }}
+        defaultZoom={8}
+        options={{ disableDefaultUI: true }}
         onClick={e => {
           console.log("latitude", e.latLng.lat());
           console.log("longitude", e.latLng.lng());
+          getWeatherData(e.latLng.lat(), e.latLng.lng());
+          options={{ disableDefaultUI: false }}
+          onClick={e => {
+            console.log("latitude", e.latLng.lat());
+            console.log("longitude", e.latLng.lng());
         }}
       />
     ))
@@ -90,4 +109,14 @@ const WeatherMap: React.SFC<WeatherMapProps> = () => {
   );
 };
 
-export default WeatherMap;
+const mapDispatchToProps = (dispatch: Function) => {
+  return {
+    getTemperature: (temperature: Object) =>
+      dispatch(actionTypes.getTemperature(temperature))
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(UnconnectedWeatherMap);
