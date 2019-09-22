@@ -11,14 +11,18 @@ import Loader from "../Loader/Loader";
 export interface WeatherMapProps {}
 
 export const UnconnectedWeatherMap: React.SFC = (props: any) => {
-  (function getData() {
+  const [location, setLocation] = useState({
+    lat: 52.412144263995835,
+    lng: 16.83990933013979
+  });
+
+  const getWeatherData = (lat: number, lng: number) => {
     axios
       .get(
-        `http://api.openweathermap.org/data/2.5/weather?q=Poznan&units=metric&APPID=${weatherKey}`
+        `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&units=metric&APPID=${weatherKey}`
       )
       .then(function(response) {
-        props.getTemperature(response.data.main);
-        console.log(response);
+        props.getTemperature(response.data.list[0].main);
       })
       .catch(function(error) {
         // handle error
@@ -27,12 +31,9 @@ export const UnconnectedWeatherMap: React.SFC = (props: any) => {
       .finally(function() {
         // always executed
       });
-  })();
+  };
 
-  const [location, setLocation] = useState({
-    lat: 52.412144263995835,
-    lng: 16.83990933013979
-  });
+  getWeatherData(location.lat, location.lng);
 
   const Container = styled.div`
     height: 100vh;
@@ -50,7 +51,7 @@ export const UnconnectedWeatherMap: React.SFC = (props: any) => {
     width: 30vw;
     right: 15vw;
     top: 10px;
-    border: none;
+    border: solid 1px #ccc;
   `;
 
   // Get the location of the user with the HTML5 GeoLocation API
@@ -68,11 +69,12 @@ export const UnconnectedWeatherMap: React.SFC = (props: any) => {
     withGoogleMap(() => (
       <GoogleMap
         defaultCenter={location}
-        defaultZoom={16}
-        options={{ disableDefaultUI: false }}
+        defaultZoom={8}
+        options={{ disableDefaultUI: true }}
         onClick={e => {
           console.log("latitude", e.latLng.lat());
           console.log("longitude", e.latLng.lng());
+          getWeatherData(e.latLng.lat(), e.latLng.lng());
         }}
       />
     ))
