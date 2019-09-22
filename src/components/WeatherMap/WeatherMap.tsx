@@ -11,11 +11,13 @@ import Loader from "../Loader/Loader";
 export interface WeatherMapProps {}
 
 export const UnconnectedWeatherMap: React.SFC = (props: any) => {
+
+const WeatherMap: React.SFC<WeatherMapProps> = () => {
   const [location, setLocation] = useState({
     lat: 52.412144263995835,
     lng: 16.83990933013979
   });
-
+  
   const getWeatherData = (lat: number, lng: number) => {
     axios
       .get(
@@ -75,6 +77,10 @@ export const UnconnectedWeatherMap: React.SFC = (props: any) => {
           console.log("latitude", e.latLng.lat());
           console.log("longitude", e.latLng.lng());
           getWeatherData(e.latLng.lat(), e.latLng.lng());
+          options={{ disableDefaultUI: false }}
+          onClick={e => {
+            console.log("latitude", e.latLng.lat());
+            console.log("longitude", e.latLng.lng());
         }}
       />
     ))
